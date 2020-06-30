@@ -1,7 +1,7 @@
 from PIL import Image
 import random
 
-a = random.randrange(1,6)
+a = random.randrange(1,7)
 
 print(a)
 
