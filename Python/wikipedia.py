@@ -1,6 +1,11 @@
 import wikipedia
+import os
+from gtts import gTTS
 
 search_word = input("Wikipedia> ")
+language = 'en'
 
-print(f"search results:\n{wikipedia.search(search_word)}\n")
-print(f"search summary:{wikipedia.summary(search_word, sentences=1)}")
+myobj = gTTS(text=wikipedia.summary(search_word, sentences=1))
+myobj.save("Testing.mp3")
+os.system("Testing.mp3")
+
