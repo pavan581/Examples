@@ -1,0 +1,556 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Kotlin Bootcamp for Programmers 6: Functional manipulation</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="/elements/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid="UA-81734179-1"
+                  id="kotlin-bootcamp-sams"
+                  title="Kotlin Bootcamp for Programmers 6: Functional manipulation"
+                  environment="web"
+                  feedback-link="https://github.com/google-developer-training/kotlin-bootcamp/issues/new?assignees=&amp;labels=&amp;template=kotlin-bootcamp-issue.md&amp;title=Kotlin&#43;Bootcamp&#43;issue%3A&#43;">
+    
+      <google-codelab-step label="Welcome" duration="0">
+        <p>This codelab is part of the <a href="https://developer.android.com/courses/kotlin-bootcamp/overview" target="_blank">Kotlin Bootcamp for Programmers course</a>. You&#39;ll get the most value out of this course if you work through the codelabs in sequence. Depending on your knowledge, you may be able to skim some sections. This course is geared towards programmers who know an object-oriented language, and want to learn <a href="https://kotlinlang.org/" target="_blank">Kotlin</a>.</p>
+<p class="image-container"><img style="width: 260.50px" src="https://lh5.googleusercontent.com/NHp82UwrxacQ2PcYQLTZt2CpQvnUYuFkmMJCqzSLK1yUQgBNsAnELRtqdW0hxNlG5J6xpbiauG_-mxY-l51SgRGZ6sgmePbhm9kT4-Hor32DOomDd36N_X9-sIXIsvfe2Zt-tRKU"></p>
+
+<h2 is-upgraded>Introduction</h2>
+<p>This is the final codelab in the Kotlin Bootcamp. In this codelab you learn about annotations and labeled breaks. You review lambdas and higher- order functions, which are key parts of Kotlin. You also learn more about inlining functions, and Single Abstract Method (SAM) interfaces. Finally, you learn more about the <a href="https://kotlinlang.org/api/latest/jvm/stdlib/" target="_blank">Kotlin Standard Library</a>.</p>
+<p>Rather than build a single sample app, the lessons in this course are designed to build your knowledge, but be semi-independent of each other so you can skim sections you&#39;re familiar with. To tie them together, many of the examples use an aquarium theme. And if you want to see the full aquarium story, check out the <a href="https://classroom.udacity.com/courses/ud9011" target="_blank">Kotlin Bootcamp for Programmers</a> Udacity course.</p>
+<p class="image-container"><img style="width: 624.00px" src="https://lh5.googleusercontent.com/ot0gTH5AUoFQ0MbDF5-2GZme65u3BhPV-bto50xr3QHAORKmUfs3gQKNO1PrsWriw-Ctf2NpCDS11au4VdRSOigQ8X2EVBh5bY35mQ1ZILt1IwtAES-n1cLCOGQpDDIJAAdSoc3T"></p>
+
+<h2 is-upgraded>What you should already know</h2>
+<ul>
+<li>The syntax of Kotlin functions, classes, and methods</li>
+<li>How to create a new class in the IntelliJ IDEA and run a program</li>
+<li>The basics of lambdas and higher-order functions</li>
+</ul>
+<h2 class="checklist" is-upgraded>What you&#39;ll learn</h2>
+<ul class="checklist">
+<li>The basics of annotations</li>
+<li>How to use labeled breaks</li>
+<li>More about higher-order functions</li>
+<li>About Single Abstract Method (SAM) interfaces</li>
+<li>About the Kotlin Standard Library</li>
+</ul>
+<h2 is-upgraded>What you&#39;ll do</h2>
+<ul>
+<li>Create a simple annotation.</li>
+<li>Use a labeled break.</li>
+<li>Review lambda functions in Kotlin.</li>
+<li>Use and create higher-order functions.</li>
+<li>Call some Single Abstract Method interfaces.</li>
+<li>Use some functions from the Kotlin Standard Library.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Task: Learn about annotations" duration="0">
+        <p>Annotations are a way of attaching metadata to code, and are not something specific to Kotlin. The annotations are read by the compiler and used to generate code or logic. Many frameworks, such as <a href="https://ktor.io/" target="_blank">Ktor</a> and <a href="https://ktor.io/kotlinx/index.html" target="_blank">Kotlinx</a>, as well as <a href="https://codelabs.developers.google.com/codelabs/android-room-with-a-view-kotlin/#0" target="_blank">Room</a>, use annotations to configure how they run and interact with your code. You are unlikely to encounter any annotations until you start using frameworks, but it&#39;s useful to be able to know how to read an annotation.</p>
+<p>There are also annotations that are available through the Kotlin standard library that control the way code is compiled. They&#39;re really useful if you&#39;re exporting Kotlin to Java code, but otherwise you don&#39;t need them that often.</p>
+<p>Annotations go right before the thing that is annotated, and most things can be annotated—classes, functions, methods, and even control structures. Some annotations can take arguments.</p>
+<p>Here is an example of some annotations.</p>
+<pre><code>@file:JvmName(&#34;InteropFish&#34;)
+class InteropFish {
+   companion object {
+       @JvmStatic fun interop()
+   }
+}</code></pre>
+<p>This says the exported name of this file is <code>InteropFish</code> with the <code>JvmName</code> annotation; the <code>JvmName</code> annotation is taking an argument of <code>&#34;InteropFish&#34;</code>. In the companion object, <code>@JvmStatic</code> tells Kotlin to make <code>interop()</code> a static function in <code>InteropFish</code>.</p>
+<p>You can also create your own annotations, but this is mostly useful if you are writing a library that needs particular information about classes at runtime, that is <a href="https://kotlinlang.org/docs/reference/reflection.html#reflection" target="_blank">reflection</a>.</p>
+<h2 is-upgraded>Step 1: Create a new package and file</h2>
+<ol type="1" start="1">
+<li>Under <strong>src</strong>, create a new package, <code>example</code>.</li>
+<li>In <strong>example</strong>, create a new Kotlin file, <code>Annotations.kt</code>.</li>
+</ol>
+<h2 is-upgraded>Step 2: Create your own annotation</h2>
+<ol type="1" start="1">
+<li>In <code>Annotations.kt</code>, create a <code>Plant</code> class with two methods, <code>trim()</code> and <code>fertilize()</code>.</li>
+</ol>
+<pre><code>class Plant {
+        fun trim(){}
+        fun fertilize(){}
+}</code></pre>
+<ol type="1" start="2">
+<li>Create a function that prints all the methods in a class. Use <code>::class</code> to get information about a class at runtime. Use <code>declaredMemberFunctions</code> to get a list of the methods of a class. (To access this, you need to import <code>kotlin.reflect.full.*</code>)</li>
+</ol>
+<pre><code>import kotlin.reflect.full.*    // required import
+
+class Plant {
+    fun trim(){}
+    fun fertilize(){}
+}
+
+fun testAnnotations() {
+    val classObj = Plant::class
+    for (m in classObj.declaredMemberFunctions) {
+        println(m.name)
+    }
+}</code></pre>
+<ol type="1" start="3">
+<li>Create a <code>main()</code> function to call your test routine. Run your program and observe the output.</li>
+</ol>
+<pre><code>fun main() {
+    testAnnotations()
+}</code></pre>
+<pre>⇒ trim
+fertilize</pre>
+<ol type="1" start="4">
+<li>Create a simple annotation, <code>ImAPlant</code>.</li>
+</ol>
+<pre><code>annotation class ImAPlant</code></pre>
+<p>This doesn&#39;t do anything other than say it is annotated.</p>
+<ol type="1" start="4">
+<li>Add the annotation in front of your <code>Plant</code> class.</li>
+</ol>
+<pre><code>@ImAPlant class Plant{
+    ...
+}</code></pre>
+<ol type="1" start="5">
+<li>Change <code>testAnnotations()</code> to print all the annotations of a class. Use <code>annotations</code> to get all the annotations of a class. Run your program and observe the result.</li>
+</ol>
+<pre><code>fun testAnnotations() {
+    val plantObject = Plant::class
+    for (a in plantObject.annotations) {
+        println(a.annotationClass.simpleName)
+    }
+}</code></pre>
+<pre>⇒ ImAPlant</pre>
+<ol type="1" start="6">
+<li>Change <code>testAnnotations()</code> to find the <code>ImAPlant</code> annotation. Use <code>findAnnotation()</code> to find a specific annotation. Run your program and observe the result.</li>
+</ol>
+<pre><code>fun testAnnotations() {
+    val plantObject = Plant::class
+    val myAnnotationObject = plantObject.findAnnotation&lt;ImAPlant&gt;()
+    println(myAnnotationObject)
+}
+</code></pre>
+<pre>⇒ @example.ImAPlant()</pre>
+<h2 is-upgraded>Step 3: Create a targeted annotation</h2>
+<p>Annotations can target getters or setters. When they do, you can apply them with the <code>@get:</code> or <code>@set:</code> prefix. This comes up a lot when using frameworks with annotations.</p>
+<ol type="1" start="1">
+<li>Declare two annotations, <code>OnGet</code> which can only be applied to property getters, and <code>OnSet</code> which can only be applied to property setters. Use <code>@Target(AnnotationTarget.PROPERTY_GETTER)</code> or <code>PROPERTY_SETTER</code> on each.</li>
+</ol>
+<pre><code>annotation class ImAPlant
+
+@Target(AnnotationTarget.PROPERTY_GETTER)
+annotation class OnGet
+@Target(AnnotationTarget.PROPERTY_SETTER)
+annotation class OnSet
+
+@ImAPlant class Plant {
+    @get:OnGet
+    val isGrowing: Boolean = true
+
+    @set:OnSet
+    var needsFood: Boolean = false
+}</code></pre>
+<p>Annotations are really powerful for creating libraries that inspect things both at runtime and sometimes at compile time. However, typical application code just uses annotations provided by frameworks.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Task: Learn about labeled breaks" duration="0">
+        <p>Kotlin has several ways of controlling flow. You are already familiar with <code>return</code>, which returns from a function to its enclosing function. Using a <code>break</code> is like <code>return</code>, but for loops.</p>
+<p>Kotlin gives you additional control over loops with what&#39;s called a <a href="https://kotlinlang.org/docs/reference/returns.html#break-and-continue-labels" target="_blank">labeled break</a>. A <code>break</code> qualified with a label jumps to the execution point right after the loop marked with that label. This is particularly useful when dealing with nested loops.</p>
+<p>Any expression in Kotlin may be marked with a label. Labels have the form of an identifier followed by the <code>@</code> sign.</p>
+<ol type="1" start="1">
+<li>In <code>Annotations.kt</code>, try out a labeled break by breaking out from an inner loop.</li>
+</ol>
+<pre><code>fun labels() {
+    outerLoop@ for (i in 1..100) {
+         print(&#34;$i &#34;)
+         for (j in 1..100) {
+             if (i &gt; 10) break@outerLoop  // breaks to outer loop
+        }
+    }
+}
+
+fun main() {
+    labels()
+}</code></pre>
+<ol type="1" start="2">
+<li>Run your program and observe the output.</li>
+</ol>
+<pre>⇒ 1 2 3 4 5 6 7 8 9 10 11 </pre>
+<p>Similarly, you can use a labeled <code>continue</code>. Instead of breaking out of the labeled loop, the labeled continue proceeds to the next iteration of the loop.</p>
+<aside class="special"><p><strong>Note:</strong> A labeled break in Kotlin can only be used to break out of loops, unlike <code>goto</code> in C++ or C#.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Task: Create simple lambdas" duration="0">
+        <p>Lambdas are anonymous functions, which are functions with no name. You can assign them to variables and pass them as arguments to functions and methods. They are extremely useful.</p>
+<h2 is-upgraded>Step 1: Create a simple lambda</h2>
+<ol type="1" start="1">
+<li>Start the REPL in IntelliJ IDEA, <strong>Tools &gt; Kotlin &gt; Kotlin REPL</strong>.</li>
+<li>Create a lambda with an argument, <code>dirty: Int</code> that does a calculation, dividing <code>dirty</code> by 2. Assign the lambda to a variable, <code>waterFilter</code>.</li>
+</ol>
+<pre><code>val waterFilter = { dirty: Int -&gt; dirty / 2 }</code></pre>
+<ol type="1" start="3">
+<li>Call <code>waterFilter</code>, passing a value of 30.</li>
+</ol>
+<pre><code>waterFilter(30)</code></pre>
+<pre>⇒ res0: kotlin.Int = 15</pre>
+<h2 is-upgraded>Step 2: Create a filter lambda</h2>
+<ol type="1" start="1">
+<li>Still in the REPL, create a data class, <code>Fish</code>, with one property, <code>name</code>.</li>
+</ol>
+<pre><code>data class Fish(val name: String)</code></pre>
+<ol type="1" start="2">
+<li>Create a list of 3 <code>Fish</code>, with names Flipper, Moby Dick, and Dory.</li>
+</ol>
+<pre><code>val myFish = listOf(Fish(&#34;Flipper&#34;), Fish(&#34;Moby Dick&#34;), Fish(&#34;Dory&#34;))</code></pre>
+<ol type="1" start="3">
+<li>Add a filter to check for names that contain the letter &#39;i&#39;.</li>
+</ol>
+<pre><code>myFish.filter { it.name.contains(&#34;i&#34;)}
+</code></pre>
+<pre>⇒ res3: kotlin.collections.List&lt;Line_1.Fish&gt; = [Fish(name=Flipper), Fish(name=Moby Dick)]</pre>
+<p>In the lambda expression, <code>it</code> refers to the current list element, and the filter is applied to each list element in turn.</p>
+<ol type="1" start="4">
+<li>Apply <code>joinString()</code> to the result, using <code>&#34;, &#34;</code> as the separator.</li>
+</ol>
+<pre><code>myFish.filter { it.name.contains(&#34;i&#34;)}.joinToString(&#34;, &#34;) { it.name }
+</code></pre>
+<pre>⇒ res4: kotlin.String = Flipper, Moby Dick</pre>
+<p>The <code>joinToString()</code> function creates a string by joining the filtered names, separated by the string specified. It is one of the many useful functions built into the Kotlin standard library.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Task: Write a higher-order function" duration="0">
+        <p>Passing a lambda or other function as an argument to a function creates a higher-order function. The filter above is a simple example of this. <code>filter()</code> is a function, and you pass it a lambda that specifies how to process each element of the list.</p>
+<p>Writing higher-order functions with extension lambdas is one of the most advanced parts of the Kotlin language. It takes a while to learn how to write them, but they are really convenient to use.</p>
+<h2 is-upgraded>Step 1: Create a new class</h2>
+<ol type="1" start="3">
+<li>Within the <strong>example</strong> package, create a new Kotlin file, <code>Fish.kt</code>.</li>
+<li>In <code>Fish.kt</code>, create a data class <code>Fish</code>, with one property, <code>name</code>.</li>
+</ol>
+<pre><code>data class Fish (var name: String)</code></pre>
+<ol type="1" start="5">
+<li>Create a function <code>fishExamples()</code>. In <code>fishExamples()</code>, create a fish named <code>&#34;splashy&#34;</code>, all lowercase.</li>
+</ol>
+<pre><code>fun fishExamples() {
+    val fish = Fish(&#34;splashy&#34;)  // all lowercase
+}</code></pre>
+<ol type="1" start="6">
+<li>Create a <code>main()</code> function which calls <code>fishExamples()</code>.</li>
+</ol>
+<pre><code>fun main () {
+    fishExamples()
+}</code></pre>
+<ol type="1" start="6">
+<li>Compile and run your program by clicking the green triangle to the left of <code>main()</code>. There is no output yet.</li>
+</ol>
+<h2 is-upgraded>Step 2: Use a higher-order function</h2>
+<p>The <code>with()</code> function lets you make one or more references to an object or property in a more compact way. Using <code>this</code>. <code>with()</code> is actually a higher-order function, and in the lamba you specify what to do with the supplied object.</p>
+<ol type="1" start="1">
+<li>Use <code>with()</code> to capitalize the fish name in <code>fishExamples()</code>.  Within the curly braces, <code>this</code> refers to the object passed to <code>with()</code>. </li>
+</ol>
+<pre><code>fun fishExamples() {
+    val fish = Fish(&#34;splashy&#34;)  // all lowercase
+    with (fish.name) {
+        this.capitalize()
+    }
+}</code></pre>
+<ol type="1" start="2">
+<li>There is no output, so add a <code>println()</code> around it. And the <code>this</code> is implicit and not needed, so you can remove it.</li>
+</ol>
+<pre><code>fun fishExamples() {
+    val fish = Fish(&#34;splashy&#34;)  // all lowercase
+    with (fish.name) {
+        println(capitalize())
+    }
+}</code></pre>
+<pre>⇒ Splashy</pre>
+<h2 is-upgraded>Step 3: Create a higher-order function</h2>
+<p>Under the hood, <code>with()</code> is a higher-order function. To see how this works, you can make your own greatly simplified version of <code>with()</code> that just works for strings.</p>
+<ol type="1" start="1">
+<li>In <code>Fish.kt</code>, define a function, <code>myWith()</code> that takes two arguments. The arguments are the object to operate on, and a function that defines the operation. The convention for the argument name with the function is <code>block</code>. In this case, that function returns nothing, which is specified with <code>Unit</code>.</li>
+</ol>
+<pre><code>fun myWith(name: String, block: String.() -&gt; Unit) {}</code></pre>
+<p>Inside <code>myWith()</code>, <code>block()</code> is now an extension function of <code>String</code>. The class being extended is often called the <strong>receiver object</strong>. So <code>name</code> is the receiver object in this case.</p>
+<ol type="1" start="2">
+<li>In the body of <code>myWith()</code>, apply the passed in function, <code>block()</code>, to the receiver object, <code>name</code>.</li>
+</ol>
+<pre><code>fun myWith(name: String, block: String.() -&gt; Unit) {
+    name.block()
+}</code></pre>
+<ol type="1" start="3">
+<li>In <code>fishExamples()</code>, replace <code>with()</code> with <code>myWith()</code>.</li>
+</ol>
+<pre><code>fun fishExamples() {
+    val fish = Fish(&#34;splashy&#34;)  // all lowercase
+    myWith (fish.name) {
+        println(capitalize())
+    }
+}</code></pre>
+<p><code>fish.name</code> is the name argument, and <code>println(capitalize())</code> is the block function.</p>
+<ol type="1" start="4">
+<li>Run the program, and it operates as before.</li>
+</ol>
+<pre>⇒ Splashy</pre>
+<h2 is-upgraded>Step 4: Explore more built in extensions</h2>
+<p>The <code>with()</code> extension lambda is very useful, and is part of the <a href="https://kotlinlang.org/api/latest/jvm/stdlib/" target="_blank">Kotlin Standard Library</a>. Here are a few of the others you might find handy: <code>run()</code>, <code>apply()</code>, and <code>let()</code>.</p>
+<p>The <code>run()</code> function is an extension that works with all types. It takes one lambda as its argument and returns the result of executing the lambda.</p>
+<ol type="1" start="1">
+<li>In <code>fishExamples()</code>, call <code>run()</code> on <code>fish</code> to get the name.</li>
+</ol>
+<pre><code>fish.run {
+   name
+}</code></pre>
+<p>This just returns the <code>name</code> property. You could assign that to a variable or print it. This isn&#39;t actually a useful example, as you could just access the property, but <code>run()</code> can be useful for more complicated expressions.</p>
+<p>The <code>apply()</code> function is similar to <code>run()</code>, but it returns the changed object it was applied to instead of the result of the lambda. This can be useful for calling methods on a newly created object.</p>
+<ol type="1" start="2">
+<li>Make a copy of <code>fish</code> and call <code>apply()</code> to set the name of the new copy.</li>
+</ol>
+<pre><code>val fish2 = Fish(name = &#34;splashy&#34;).apply {
+     name = &#34;sharky&#34;
+}
+println(fish2.name)
+</code></pre>
+<pre>⇒ sharky</pre>
+<aside class="special"><p><strong>Note: </strong><code>run()</code> and <code>apply()</code> are similar, but <code>run()</code> returns the result of applying the function, and <code>apply()</code> returns the object after applying the function.</p>
+</aside>
+<p>The <code>let()</code> function is similar to <code>apply()</code>, but it returns a <em>copy</em> of the object with the changes. This can be useful for chaining manipulations together.</p>
+<ol type="1" start="3">
+<li>Use <code>let()</code> to get the name of <code>fish</code>, capitalize it, concatenate another string to it, get the length of that result, add 31 to the length, then print the result.</li>
+</ol>
+<pre><code>println(fish.let { it.name.capitalize()}
+.let{it + &#34;fish&#34;}
+.let{it.length}
+.let{it + 31})</code></pre>
+<pre>⇒ 42</pre>
+<p>In this example, the object type referred to by <code>it</code> is <code>Fish</code>, then <code>String</code>, then <code>String</code> again and finally <code>Int</code>.</p>
+<ol type="1" start="4">
+<li>Print <code>fish</code> after calling <code>let()</code>, and you will see that it hasn&#39;t changed.</li>
+</ol>
+<pre><code>println(fish.let { it.name.capitalize()}
+    .let{it + &#34;fish&#34;}
+    .let{it.length}
+    .let{it + 31})
+println(fish)</code></pre>
+<pre>⇒ 42
+Fish(name=splashy)</pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Concept: Inline functions" duration="0">
+        <p>Lambdas and higher-order functions are really useful, but there is something you should know: lambdas are objects. A lambda expression is an instance of a <code>Function</code> interface, which is itself a subtype of <code>Object</code>. Consider the earlier example of <code>myWith()</code>.</p>
+<pre><code>myWith(fish.name) {
+    capitalize()
+}</code></pre>
+<p>The <code>Function</code> interface has a method, <code>invoke()</code>, which is overridden to call the lambda expression. Written out longhand, it would look something like the code below.</p>
+<pre><code>// actually creates an object that looks like this
+myWith(fish.name, object : Function1&lt;String, Unit&gt; {
+    override fun invoke(name: String) {
+        name.capitalize()
+    }
+})</code></pre>
+<p>Normally this isn&#39;t a problem, because creating objects and calling functions doesn&#39;t incur much overhead, that is, memory and CPU time. But if you&#39;re defining something like <code>myWith()</code> that you use everywhere, the overhead could add up.</p>
+<p>Kotlin provides <code>inline</code> as a way to handle this case to reduce overhead during runtime by adding a bit more work for the compiler. (You learned a little about <code>inline</code> in the earlier lesson talking about reified types.) Marking a function as <code>inline</code> means that every time the function is called, the compiler will actually transform the source code to &#34;inline&#34; the function. That is, the compiler will change the code to replace the lambda with the instructions inside the lambda.<br><br>If <code>myWith()</code> in the above example is marked with <code>inline</code>:</p>
+<pre><code>inline myWith(fish.name) {
+    capitalize()
+}</code></pre>
+<p>it is transformed into a direct call:</p>
+<pre><code>// with myWith() inline, this becomes
+fish.name.capitalize()</code></pre>
+<p>It is worth noting that inlining large functions does increase your code size, so it&#39;s best used for simple functions that are used many times like <code>myWith()</code>. The extension functions from the libraries you learned about earlier are marked <code>inline</code>, so you don&#39;t have to worry about extra objects being created.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Task: Learn about Single Abstract Methods" duration="0">
+        <p>Single Abstract Method just means an interface with one method on it. They are very common when using APIs written in the Java programming language, so there is an acronym for it, SAM. Some examples are <code>Runnable</code>, which has a single abstract method, <code>run()</code>, and <code>Callable</code>, which has a single abstract method, <code>call()</code>.<br></p>
+<p>In Kotlin, you have to call functions that take SAMs as parameters all the time. Try the example below.</p>
+<ol type="1" start="1">
+<li>Inside <strong>example</strong>, create a Java class, <code>JavaRun</code>, and paste the following into the file.</li>
+</ol>
+<pre><code>package example;
+
+public class JavaRun {
+    public static void runNow(Runnable runnable) {
+        runnable.run();
+    }
+}</code></pre>
+<p>Kotlin lets you instantiate an object that implements an interface by preceding the type with <code>object:</code>. It&#39;s useful for passing parameters to SAMs.</p>
+<ol type="1" start="2">
+<li>Back in <code>Fish.kt</code>, create a function <code>runExample()</code>, which creates a <code>Runnable</code> using <code>object:</code> The object should implement <code>run()</code> by printing <code>&#34;I&#39;m a Runnable&#34;</code>.</li>
+</ol>
+<pre><code>fun runExample() {
+    val runnable = object: Runnable {
+        override fun run() {
+            println(&#34;I&#39;m a Runnable&#34;)
+        }
+    }
+}</code></pre>
+<ol type="1" start="3">
+<li>Call <code>JavaRun.runNow()</code> with the object you created.</li>
+</ol>
+<pre><code>fun runExample() {
+    val runnable = object: Runnable {
+        override fun run() {
+            println(&#34;I&#39;m a Runnable&#34;)
+        }
+    }
+    JavaRun.runNow(runnable)
+}</code></pre>
+<ol type="1" start="4">
+<li>Call <code>runExample()</code> from <code>main()</code> and run the program.</li>
+</ol>
+<pre>⇒ I&#39;m a Runnable</pre>
+<p>A lot of work to print something, but a good example of how a SAM works. Of course, Kotlin provides a simpler way to do this—use a lambda in place of the object to make this code a lot more compact.</p>
+<ol type="1" start="4">
+<li>Remove the existing code in <code>runExample</code>, change it to call <code>runNow()</code> with a lambda, and run the program.</li>
+</ol>
+<pre><code>fun runExample() {
+    JavaRun.runNow({
+        println(&#34;Passing a lambda as a Runnable&#34;)
+    })
+}
+</code></pre>
+<pre>⇒ Passing a lambda as a Runnable</pre>
+<ol type="1" start="5">
+<li>You can make this even more concise using the last parameter call syntax, and get rid of the parentheses.</li>
+</ol>
+<pre><code>fun runExample() {
+    JavaRun.runNow {
+        println(&#34;Last parameter is a lambda as a Runnable&#34;)
+    }
+}</code></pre>
+<pre>⇒ Last parameter is a lambda as a Runnable</pre>
+<p>That&#39;s the basics of a SAM, a Single Abstract Method. You can instantiate, override and make a call to a SAM with one line of code, using the pattern:<br><code>Class.singleAbstractMethod { lambda_of_override }</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Summary" duration="0">
+        <p>This lesson reviewed lambdas and went into more depth with higher-order functions—key parts of Kotlin. You also learned about annotations and labeled breaks.</p>
+<ul>
+<li>Use annotations to specify things to the compiler. For example:<br><code>@file:JvmName(&#34;Foo&#34;)</code></li>
+<li>Use labeled breaks to let your code exit from inside nested loops. For example:<br><code>if (i &gt; 10) break@outerLoop  // breaks to outerLoop label</code></li>
+<li>Lambdas can be very powerful when coupled with higher-order functions.</li>
+<li>Lambdas are objects. To avoid creating the object, you can mark the function with <code>inline</code>, and the compiler will put the contents of the lambda in the code directly.</li>
+<li>Use <code>inline</code> carefully, but it can help reduce resource usage by your program.</li>
+<li>SAM, Single Abstract Method, is a common pattern, and made simpler with lambdas. The basic pattern is:<br><code>Class.singleAbstractMethod { lamba_of_override }</code></li>
+<li>The <a href="https://kotlinlang.org/api/latest/jvm/stdlib/" target="_blank">Kotlin Standard Library</a> provides numerous useful functions, including several SAMs, so get to know what&#39;s in it.</li>
+</ul>
+<p>There&#39;s lots more to Kotlin than was covered in the course, but you now have the basics to begin developing your own Kotlin programs. Hopefully you&#39;re excited about this expressive language, and looking forward to creating more functionality while writing less code (especially if you&#39;re coming from the Java programming language.) Practice and learning as you go is the best way to become an expert in Kotlin, so continue to explore and learn about Kotlin on your own.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Learn more" duration="0">
+        <h2 is-upgraded>Kotlin documentation</h2>
+<p>If you want more information on any topic in this course, or if you get stuck, <a href="https://kotlinlang.org/" target="_blank">https://kotlinlang.org</a> is your best starting point.</p>
+<ul>
+<li><a href="https://kotlinlang.org/docs/reference/coding-conventions.html" target="_blank">Kotlin coding conventions</a></li>
+<li><a href="https://kotlinlang.org/docs/reference/idioms.html" target="_blank">Kotlin idioms</a></li>
+</ul>
+
+<ul>
+<li><a href="https://kotlinlang.org/docs/reference/annotations.html" target="_blank">Annotations</a></li>
+<li><a href="https://kotlinlang.org/docs/reference/reflection.html#reflection" target="_blank">Reflection</a></li>
+<li><a href="https://kotlinlang.org/docs/reference/returns.html#break-and-continue-labels" target="_blank">Labeled breaks</a></li>
+<li><a href="https://kotlinlang.org/docs/reference/lambdas.html" target="_blank">Higher-order functions and lambdas</a></li>
+<li><a href="https://kotlinlang.org/docs/reference/inline-functions.html" target="_blank">Inline functions</a></li>
+</ul>
+<h2 is-upgraded>Kotlin tutorials</h2>
+<p>The <a href="https://play.kotlinlang.org" target="_blank">https://play.kotlinlang.org</a> website includes rich tutorials called Kotlin Koans, a <a href="https://try.kotlinlang.org/#/Examples/Hello,%20world!/Simplest%20version/Simplest%20version.kt" target="_blank">web-based interpreter</a>, and a complete set of reference documentation with examples.</p>
+<h2 is-upgraded>Udacity course</h2>
+<p>To view the Udacity course on this topic, see <a href="https://classroom.udacity.com/courses/ud9011" target="_blank">Kotlin Bootcamp for Programmers</a>.</p>
+<h2 is-upgraded>IntelliJ IDEA</h2>
+<p><a href="https://www.jetbrains.com/help/idea/" target="_blank">Documentation for the IntelliJ IDEA</a> can be found on the JetBrains website.</p>
+
+<h2 is-upgraded>Kotlin Standard Library</h2>
+<p>The <a href="https://kotlinlang.org/api/latest/jvm/stdlib/" target="_blank">Kotlin Standard Library</a> provides numerous useful functions. Before you write your own function or interface, always check the Standard Library to see if someone has saved you some work. Check back occasionally, because new functionality is added frequently.</p>
+<h2 is-upgraded>Kotlin tutorials</h2>
+<p>The <a href="https://play.kotlinlang.org" target="_blank">https://play.kotlinlang.org</a> website includes rich tutorials called Kotlin Koans, a <a href="https://try.kotlinlang.org/#/Examples/Hello,%20world!/Simplest%20version/Simplest%20version.kt" target="_blank">web-based interpreter</a>, and a complete set of reference documentation with examples.</p>
+<h2 is-upgraded>Udacity course</h2>
+<p>To view the Udacity course on this topic, see <a href="https://classroom.udacity.com/courses/ud9011" target="_blank">Kotlin Bootcamp for Programmers</a>.</p>
+<h2 is-upgraded>IntelliJ IDEA</h2>
+<p><a href="https://www.jetbrains.com/help/idea/" target="_blank">Documentation for the IntelliJ IDEA</a> can be found on the JetBrains website.</p>
+
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Homework" duration="0">
+        <p>This section lists possible homework assignments for students who are working through this codelab as part of a course led by an instructor. It&#39;s up to the instructor to do the following:</p>
+<ul>
+<li>Assign homework if required.</li>
+<li>Communicate to students how to submit homework assignments.</li>
+<li>Grade the homework assignments.</li>
+</ul>
+<p>Instructors can use these suggestions as little or as much as they want, and should feel free to assign any other homework they feel is appropriate.</p>
+<p>If you&#39;re working through this codelab on your own, feel free to use these homework assignments to test your knowledge.</p>
+
+<h2 is-upgraded><strong>Answer these questions</strong></h2>
+<h3 is-upgraded><strong>Question 1</strong></h3>
+<p>In Kotlin, SAM stands for:</p>
+<p>▢ Safe Argument Matching</p>
+<p>▢ Simple Access Method</p>
+<p>▢ Single Abstract Method</p>
+<p>▢ Strategic Access Methodology</p>
+<h3 is-upgraded><strong>Question 2</strong></h3>
+<p>Which one of the following is not a Kotlin Standard Library extension function?</p>
+<p>▢ <code>elvis()</code></p>
+<p>▢ <code>apply()</code></p>
+<p>▢ <code>run()</code></p>
+<p>▢ <code>with()</code></p>
+<h3 is-upgraded><strong>Question 3</strong></h3>
+<p>Which one of the following is not true of lambdas in Kotlin?</p>
+<p>▢ Lambdas are anonymous functions.</p>
+<p>▢ Lambdas are objects unless inlined.</p>
+<p>▢ Lambdas are resource intensive and shouldn&#39;t be used.</p>
+<p>▢ Lambdas can be passed to other functions.</p>
+<h3 is-upgraded><strong>Question 4</strong></h3>
+<p>Labels in Kotlin are indicated with an identifier followed by:</p>
+<p>▢ <code>:</code></p>
+<p>▢ <code>::</code></p>
+<p>▢ <code>@:</code></p>
+<p>▢ <code>@</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Next steps" duration="0">
+        <p>Congratulations! You&#39;ve completed the Kotlin Bootcamp for Programmers codelab.</p>
+<p>For an overview of the course, including links to other codelabs, see <a href="https://codelabs.developers.google.com/codelabs/kotlin-bootcamp-welcome/" target="_blank">&#34;Kotlin Bootcamp for Programmers: Welcome to the course.&#34;</a></p>
+
+<p>If you&#39;re a Java programmer, you may be interested in the <a href="https://codelabs.developers.google.com/codelabs/java-to-kotlin/" target="_blank">Refactoring to Kotlin</a> codelab. The automated Java to Kotlin conversion tools cover the basics, but you can create more concise, robust code with a little extra work.</p>
+<p>If you&#39;re interested in developing apps for Android, take a look at <a href="https://developer.android.com/courses/kotlin-android-fundamentals/overview" target="_blank">Android Kotlin Fundamentals</a>.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="/elements/codelab-elements/native-shim.js"></script>
+  <script src="/elements/codelab-elements/custom-elements.min.js"></script>
+  <script src="/elements/codelab-elements/prettify.js"></script>
+  <script src="/elements/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>
