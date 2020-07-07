@@ -72,5 +72,3 @@ if __name__ == "__main__":
 
         elif 'play music' in MyText or 'open spotify' in MyText:
             subprocess.Popen("%s"%r'C:\Users\91957\AppData\Local\Microsoft\WindowsApps\SpotifyAB.SpotifyMusic_zpdnekdrzrea0\\Spotify.exe')
-        
-        
